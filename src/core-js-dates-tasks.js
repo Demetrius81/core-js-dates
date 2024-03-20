@@ -95,8 +95,12 @@ function getCountDaysInMonth(month, year) {
  * '2024-02-01T00:00:00.000Z', '2024-02-02T00:00:00.000Z'  => 2
  * '2024-02-01T00:00:00.000Z', '2024-02-12T00:00:00.000Z'  => 12
  */
-function getCountDaysOnPeriod(/* dateStart, dateEnd */) {
-  throw new Error('Not implemented');
+function getCountDaysOnPeriod(dateStart, dateEnd) {
+  return (
+    Math.floor(
+      (new Date(dateEnd) - new Date(dateStart)) / (1000 * 60 * 60 * 24)
+    ) + 1
+  );
 }
 
 /**
@@ -116,8 +120,8 @@ function getCountDaysOnPeriod(/* dateStart, dateEnd */) {
  * '2024-02-02', { start: '2024-02-02', end: '2024-03-02' } => true
  * '2024-02-10', { start: '2024-02-02', end: '2024-03-02' } => true
  */
-function isDateInPeriod(/* date, period */) {
-  throw new Error('Not implemented');
+function isDateInPeriod(date, period) {
+  return period.start <= date && date <= period.end;
 }
 
 /**
@@ -131,8 +135,9 @@ function isDateInPeriod(/* date, period */) {
  * '1999-01-05T02:20:00.000Z' => '1/5/1999, 2:20:00 AM'
  * '2010-12-15T22:59:00.000Z' => '12/15/2010, 10:59:00 PM'
  */
-function formatDate(/* date */) {
-  throw new Error('Not implemented');
+function formatDate(date) {
+  const d = new Date(date);
+  return `${d.getMonth() + 1}/${d.getUTCDate()}/${d.getFullYear()}, ${d.getUTCHours() > 12 ? d.getUTCHours() % 12 : d.getUTCHours()}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')} ${d.getUTCHours() >= 12 ? 'PM' : 'AM'}`;
 }
 
 /**
@@ -147,8 +152,20 @@ function formatDate(/* date */) {
  * 12, 2023 => 10
  * 1, 2024 => 8
  */
-function getCountWeekendsInMonth(/* month, year */) {
-  throw new Error('Not implemented');
+function getCountWeekendsInMonth(month, year) {
+  return new Array(
+    Math.round(
+      (new Date(year, month, 1) - new Date(year, month - 1, 1)) /
+        1000 /
+        3600 /
+        24
+    )
+  )
+    .fill(1)
+    .map((x, idx) => x + idx)
+    .map((x) => new Date(year, month - 1, x).getDay())
+    .map((x) => (x === 0 || x === 6 ? 1 : null))
+    .filter((x) => x).length;
 }
 
 /**
